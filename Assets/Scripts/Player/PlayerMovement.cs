@@ -10,6 +10,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Min(0f)]
     private float rotationSpeed = 12f;
 
+    [SerializeField, Range(0f, 0.9f)]
+    private float joystickDeadZone = 0.15f;
+
     [Header("References")]
     [SerializeField]
     private FloatingJoystick joystick;
@@ -41,25 +44,35 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        float horizontalInput = joystick.Horizontal;
-        float verticalInput = joystick.Vertical;
-
-        moveDirection = new Vector3(
-            horizontalInput,
-            0f,
-            verticalInput
+        Vector2 joystickInput = new Vector2(
+            joystick.Horizontal,
+            joystick.Vertical
         );
 
-        // Çapraz hareketin daha hızlı olmasını engeller.
-        if (moveDirection.sqrMagnitude > 1f)
+        // Joystick merkezdeyken oluşabilecek küçük değerleri yok sayar.
+        if (joystickInput.magnitude < joystickDeadZone)
         {
-            moveDirection.Normalize();
+            joystickInput = Vector2.zero;
         }
+        else
+        {
+            joystickInput = Vector2.ClampMagnitude(
+                joystickInput,
+                1f
+            );
+        }
+
+        moveDirection = new Vector3(
+            joystickInput.x,
+            0f,
+            joystickInput.y
+        );
     }
 
     private void MovePlayer()
     {
-        Vector3 horizontalVelocity = moveDirection * moveSpeed;
+        Vector3 horizontalVelocity =
+            moveDirection * moveSpeed;
 
         rb.linearVelocity = new Vector3(
             horizontalVelocity.x,
@@ -70,19 +83,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void RotatePlayer()
     {
-        if (moveDirection.sqrMagnitude < 0.01f)
+        // Çarpışmalardan veya önceki hareketten kalan dönüşü durdurur.
+        rb.angularVelocity = Vector3.zero;
+
+        // Joystick bırakıldıysa karakterin dönüşünü değiştirme.
+        if (moveDirection.sqrMagnitude < 0.001f)
         {
             return;
         }
 
         Quaternion targetRotation =
-            Quaternion.LookRotation(moveDirection, Vector3.up);
+            Quaternion.LookRotation(
+                moveDirection,
+                Vector3.up
+            );
 
-        Quaternion smoothRotation = Quaternion.Slerp(
-            rb.rotation,
-            targetRotation,
-            rotationSpeed * Time.fixedDeltaTime
-        );
+        Quaternion smoothRotation =
+            Quaternion.Slerp(
+                rb.rotation,
+                targetRotation,
+                rotationSpeed * Time.fixedDeltaTime
+            );
 
         rb.MoveRotation(smoothRotation);
     }
@@ -91,5 +112,11 @@ public class PlayerMovement : MonoBehaviour
     {
         moveSpeed = Mathf.Max(0f, moveSpeed);
         rotationSpeed = Mathf.Max(0f, rotationSpeed);
+
+        joystickDeadZone = Mathf.Clamp(
+            joystickDeadZone,
+            0f,
+            0.9f
+        );
     }
 }
