@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -5,86 +6,149 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     [Header("Target")]
-    [Tooltip("Düşmanın takip edeceği hedef. Boş bırakılırsa Player Tag'i aranır.")]
+    [Tooltip("Düşmanın takip edeceği hedef.")]
     [SerializeField]
     private Transform target;
 
     [Header("Path Settings")]
-    [Tooltip("Düşmanın hedef yolunu kaç saniyede bir güncelleyeceği.")]
+    [Tooltip("Oyuncunun konumu kaç saniyede bir güncellenecek?")]
     [SerializeField, Min(0.02f)]
     private float pathRefreshInterval = 0.15f;
 
-    [Tooltip("Hedef bu mesafeden fazla hareket ederse yol yeniden hesaplanır.")]
+    [Tooltip("Oyuncu bu mesafeden fazla hareket ederse yol yenilenir.")]
     [SerializeField, Min(0f)]
     private float targetPositionThreshold = 0.1f;
 
+    [Header("Pool Settings")]
+    [Tooltip("Düşman oyuncudan fazla uzaklaşırsa havuza döner.")]
+    [SerializeField, Min(1f)]
+    private float maximumDistanceFromTarget = 30f;
+
     private NavMeshAgent agent;
+
+    private Action<EnemyAI> releaseAction;
 
     private float nextPathRefreshTime;
     private Vector3 lastRequestedPosition;
+
     private bool hasRequestedPath;
+    private bool isSpawned;
+
+    public bool IsSpawned => isSpawned;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
     }
 
-    private void OnEnable()
-    {
-        nextPathRefreshTime = 0f;
-        hasRequestedPath = false;
-
-        if (target == null)
-        {
-            FindPlayer();
-        }
-    }
-
     private void Update()
     {
-        if (target == null)
+        if (!isSpawned)
         {
-            FindPlayer();
             return;
         }
 
-        // Agent kapalıysa veya NavMesh üzerinde değilse işlem yapma.
+        if (target == null)
+        {
+            ReleaseToPool();
+            return;
+        }
+
         if (!agent.enabled || !agent.isOnNavMesh)
         {
             return;
         }
 
-        CheckStoppingDistance();
+        if (IsTooFarFromTarget())
+        {
+            ReleaseToPool();
+            return;
+        }
+
         UpdateDestination();
     }
 
     /// <summary>
-    /// Düşman oyuncuya yeterince yaklaşınca mevcut yolu temizler.
+    /// EnemyPool tarafından çağrılır.
+    /// Düşmanı verilen konumda aktif eder.
     /// </summary>
-    private void CheckStoppingDistance()
+    public void Activate(
+        Vector3 spawnPosition,
+        Transform newTarget)
     {
-        Vector3 directionToTarget =
-            target.position - transform.position;
+        target = newTarget;
 
-        directionToTarget.y = 0f;
+        nextPathRefreshTime = 0f;
+        hasRequestedPath = false;
+        lastRequestedPosition = Vector3.positiveInfinity;
 
-        float stoppingDistanceSquared =
-            agent.stoppingDistance *
-            agent.stoppingDistance;
+        isSpawned = true;
 
-        if (directionToTarget.sqrMagnitude <=
-            stoppingDistanceSquared)
+        transform.position = spawnPosition;
+
+        RotateTowardsTarget();
+
+        gameObject.SetActive(true);
+
+        if (!agent.enabled || !agent.isOnNavMesh)
         {
-            if (agent.hasPath)
-            {
-                agent.ResetPath();
-            }
+            Debug.LogWarning(
+                $"{name} NavMesh üzerine yerleştirilemedi.",
+                this
+            );
+
+            ReleaseToPool();
+            return;
         }
+
+        agent.isStopped = false;
+        agent.ResetPath();
+
+        UpdateDestinationImmediately();
     }
 
     /// <summary>
-    /// Belirli aralıklarla oyuncunun konumuna yeni yol ister.
+    /// EnemyPool bu metotla düşmanın geri dönüş fonksiyonunu verir.
     /// </summary>
+    public void SetReleaseAction(
+        Action<EnemyAI> newReleaseAction)
+    {
+        releaseAction = newReleaseAction;
+    }
+
+    /// <summary>
+    /// Düşmanı yok etmek yerine havuza gönderir.
+    /// </summary>
+    public void ReleaseToPool()
+    {
+        if (!isSpawned)
+        {
+            return;
+        }
+
+        isSpawned = false;
+
+        if (agent != null &&
+            agent.enabled &&
+            agent.isOnNavMesh)
+        {
+            agent.ResetPath();
+            agent.isStopped = true;
+        }
+
+        target = null;
+        hasRequestedPath = false;
+
+        if (releaseAction != null)
+        {
+            releaseAction.Invoke(this);
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
     private void UpdateDestination()
     {
         if (Time.time < nextPathRefreshTime)
@@ -98,10 +162,12 @@ public class EnemyAI : MonoBehaviour
         Vector3 targetMovement =
             target.position - lastRequestedPosition;
 
-        bool targetMovedEnough =
-            targetMovement.sqrMagnitude >=
+        float thresholdSquared =
             targetPositionThreshold *
             targetPositionThreshold;
+
+        bool targetMovedEnough =
+            targetMovement.sqrMagnitude >= thresholdSquared;
 
         bool needsNewPath =
             !hasRequestedPath ||
@@ -113,43 +179,64 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
+        UpdateDestinationImmediately();
+    }
+
+    private void UpdateDestinationImmediately()
+    {
+        if (target == null ||
+            !agent.enabled ||
+            !agent.isOnNavMesh)
+        {
+            return;
+        }
+
         bool destinationAccepted =
             agent.SetDestination(target.position);
 
         if (destinationAccepted)
         {
-            lastRequestedPosition =
-                target.position;
-
+            lastRequestedPosition = target.position;
             hasRequestedPath = true;
         }
     }
 
-    /// <summary>
-    /// Player Tag'ine sahip objeyi bulur.
-    /// </summary>
-    private void FindPlayer()
+    private bool IsTooFarFromTarget()
     {
-        GameObject playerObject =
-            GameObject.FindGameObjectWithTag("Player");
+        Vector3 directionToTarget =
+            target.position - transform.position;
 
-        if (playerObject == null)
+        directionToTarget.y = 0f;
+
+        float maximumDistanceSquared =
+            maximumDistanceFromTarget *
+            maximumDistanceFromTarget;
+
+        return directionToTarget.sqrMagnitude >
+               maximumDistanceSquared;
+    }
+
+    private void RotateTowardsTarget()
+    {
+        if (target == null)
         {
             return;
         }
 
-        target = playerObject.transform;
-    }
+        Vector3 direction =
+            target.position - transform.position;
 
-    /// <summary>
-    /// Daha sonra farklı bir hedef vermek için kullanılabilir.
-    /// </summary>
-    public void SetTarget(Transform newTarget)
-    {
-        target = newTarget;
+        direction.y = 0f;
 
-        hasRequestedPath = false;
-        nextPathRefreshTime = 0f;
+        if (direction.sqrMagnitude < 0.001f)
+        {
+            return;
+        }
+
+        transform.rotation = Quaternion.LookRotation(
+            direction,
+            Vector3.up
+        );
     }
 
     private void OnValidate()
@@ -159,5 +246,8 @@ public class EnemyAI : MonoBehaviour
 
         targetPositionThreshold =
             Mathf.Max(0f, targetPositionThreshold);
+
+        maximumDistanceFromTarget =
+            Mathf.Max(1f, maximumDistanceFromTarget);
     }
 }
