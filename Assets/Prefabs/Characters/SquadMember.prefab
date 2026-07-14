@@ -99,6 +99,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5692176449852312446}
   - component: {fileID: 8360808071205877213}
+  - component: {fileID: 3907397013542956259}
   m_Layer: 0
   m_Name: SquadMember
   m_TagString: Untagged
@@ -115,12 +116,12 @@ Transform:
   m_GameObject: {fileID: 4412036562790699041}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1492361951379603231}
-  - {fileID: 2678717101647014077}
+  - {fileID: 2714824872583207217}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8360808071205877213
@@ -139,6 +140,36 @@ MonoBehaviour:
   maximumFollowSpeed: 12
   rotationSpeed: 12
   stoppingDistance: 0.15
+--- !u!114 &3907397013542956259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4412036562790699041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2629b4b7968590f42825f7156d9277fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoShooter
+  weaponPivot: {fileID: 2714824872583207217}
+  firePoint: {fileID: 2678717101647014077}
+  facingReference: {fileID: 5692176449852312446}
+  targetingMode: 1
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  fireRange: 6
+  maximumAimAngle: 90
+  targetScanInterval: 0.15
+  maximumDetectedEnemies: 32
+  fireInterval: 0.7
+  bulletDamage: 1
+  bulletSpeed: 16
+  bulletLifetime: 3
+  aimRotationSpeed: 15
+  fireAlignmentTolerance: 7
+  returnWeaponForwardWhenNoTarget: 1
 --- !u!1 &4445175525190977576
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,10 +194,42 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4445175525190977576}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.2, z: 0.8}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
+  m_Father: {fileID: 2714824872583207217}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7557998466863066950
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2714824872583207217}
+  m_Layer: 0
+  m_Name: WeaponPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2714824872583207217
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7557998466863066950}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2678717101647014077}
   m_Father: {fileID: 5692176449852312446}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

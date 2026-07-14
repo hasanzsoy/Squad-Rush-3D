@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 6053358722342544930}
   - component: {fileID: 3719426677446636707}
   - component: {fileID: 1136898353661438123}
+  - component: {fileID: -6380016923605106597}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Enemy
@@ -185,3 +186,17 @@ MonoBehaviour:
   pathRefreshInterval: 0.15
   targetPositionThreshold: 0.1
   maximumDistanceFromTarget: 30
+--- !u!114 &-6380016923605106597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6816940187724902983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 712c29b7fb00b6b40b8edff1ddf170b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  maximumHealth: 3
+  aimHeight: 1
