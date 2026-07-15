@@ -678,7 +678,7 @@ Transform:
   m_GameObject: {fileID: 652426725}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -716,13 +716,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   player: {fileID: 2141668517}
+  totalEnemiesToSpawn: 20
+  maximumActiveEnemies: 6
   startingDelay: 1
   spawnInterval: 1.2
-  maximumActiveEnemies: 12
-  minimumSpawnDistance: 7
-  maximumSpawnDistance: 10
-  navMeshSearchDistance: 3
-  spawnPositionAttempts: 10
+  replacementSpawnDelay: 0.75
+  minimumSpawnDistance: 9
+  maximumSpawnDistance: 12
+  minimumDistanceFromLastSpawn: 4
+  minimumDistanceFromOtherEnemies: 1.5
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  navMeshSearchDistance: 2
+  spawnPositionAttempts: 25
 --- !u!114 &719855251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1421,7 +1428,7 @@ Transform:
   m_GameObject: {fileID: 2094064818}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.8}
+  m_LocalPosition: {x: 0, y: 0.2, z: 0.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1630,16 +1637,16 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   fireRange: 6
-  maximumAimAngle: 70
+  maximumAimAngle: 65
   targetScanInterval: 0.15
   maximumDetectedEnemies: 32
   fireInterval: 0.5
   bulletDamage: 1
   bulletSpeed: 16
   bulletLifetime: 3
-  aimRotationSpeed: 15
-  fireAlignmentTolerance: 7
-  returnWeaponForwardWhenNoTarget: 1
+  aimRotationSpeed: 18
+  fireAlignmentTolerance: 6
+  returnForwardWhenNoTarget: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
