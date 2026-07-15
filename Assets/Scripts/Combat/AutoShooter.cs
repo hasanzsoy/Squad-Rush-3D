@@ -1,16 +1,17 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(100)]
 public class AutoShooter : MonoBehaviour
 {
     public enum TargetingMode
     {
-        ForwardCone, // Yalnızca baktığı yöndeki düşmanlar
-        FullCircle   // 360 derece çevredeki düşmanlar
+        ForwardCone,
+        FullCircle
     }
 
     [Header("References")]
 
-    [Tooltip("Düşmana doğru dönecek silah objesi.")]
+    [Tooltip("Düşmana doğru dönecek silah veya karakter pivotu.")]
     [SerializeField]
     private Transform weaponPivot;
 
@@ -33,55 +34,66 @@ public class AutoShooter : MonoBehaviour
 
     [Header("Target Settings")]
 
+    [Tooltip("Hedef olarak algılanacak Enemy katmanı.")]
     [SerializeField]
     private LayerMask enemyLayer;
 
+    [Tooltip("Düşmanların algılanacağı maksimum mesafe.")]
     [SerializeField, Min(0.1f)]
     private float fireRange = 6f;
 
     [Tooltip("Forward Cone modunda sağ ve sol hedefleme açısı.")]
     [SerializeField, Range(0f, 180f)]
-    private float maximumAimAngle = 80f;
+    private float maximumAimAngle = 65f;
 
+    [Tooltip("Geçerli hedef yokken kaç saniyede bir düşman aranacak?")]
     [SerializeField, Min(0.02f)]
     private float targetScanInterval = 0.15f;
 
+    [Tooltip("Tek taramada kontrol edilebilecek maksimum collider sayısı.")]
     [SerializeField, Min(1)]
     private int maximumDetectedEnemies = 32;
 
 
     [Header("Weapon Settings")]
 
+    [Tooltip("İki atış arasındaki bekleme süresi.")]
     [SerializeField, Min(0.05f)]
     private float fireInterval = 0.5f;
 
+    [Tooltip("Bir merminin vereceği hasar.")]
     [SerializeField, Min(1)]
     private int bulletDamage = 1;
 
+    [Tooltip("Merminin hareket hızı.")]
     [SerializeField, Min(0.1f)]
     private float bulletSpeed = 16f;
 
+    [Tooltip("Merminin havuzda geri dönmeden önceki ömrü.")]
     [SerializeField, Min(0.1f)]
     private float bulletLifetime = 3f;
 
+    [Tooltip("WeaponPivot veya CombatPivot dönüş hızı.")]
     [SerializeField, Min(0f)]
-    private float aimRotationSpeed = 15f;
+    private float aimRotationSpeed = 18f;
 
-    [Tooltip("Silah hedefe bu açı kadar yaklaşınca ateş eder.")]
+    [Tooltip("Silah hedefe bu açı kadar yaklaşınca ateş edebilir.")]
     [SerializeField, Range(0.1f, 45f)]
-    private float fireAlignmentTolerance = 7f;
+    private float fireAlignmentTolerance = 6f;
 
+    [Tooltip("Hedef olmadığında pivotu başlangıç yönüne döndürür.")]
     [SerializeField]
-    private bool returnWeaponForwardWhenNoTarget = true;
+    private bool returnForwardWhenNoTarget = true;
 
 
     private Collider[] detectionResults;
+
     private EnemyHealth currentTarget;
+
+    private Quaternion defaultPivotLocalRotation;
 
     private float nextScanTime;
     private float nextFireTime;
-
-    private Quaternion defaultWeaponLocalRotation;
 
 
     private void Awake()
@@ -93,7 +105,7 @@ public class AutoShooter : MonoBehaviour
 
         if (weaponPivot != null)
         {
-            defaultWeaponLocalRotation =
+            defaultPivotLocalRotation =
                 weaponPivot.localRotation;
         }
 
@@ -102,24 +114,37 @@ public class AutoShooter : MonoBehaviour
     }
 
 
-    private void Update()
+    private void LateUpdate()
     {
-        UpdateTargetScanning();
+        UpdateTarget();
 
         if (!IsCurrentTargetValid())
         {
             currentTarget = null;
-            ReturnWeaponToForward();
+
+            ReturnPivotForward();
+
             return;
         }
 
-        RotateWeaponTowardsTarget();
+        RotatePivotTowardsTarget();
         TryShoot();
     }
 
 
-    private void UpdateTargetScanning()
+    /// <summary>
+    /// Geçerli hedef varsa onu korur.
+    /// Hedef yoksa belirli aralıklarla yeni düşman arar.
+    /// </summary>
+    private void UpdateTarget()
     {
+        if (IsCurrentTargetValid())
+        {
+            return;
+        }
+
+        currentTarget = null;
+
         if (Time.time < nextScanTime)
         {
             return;
@@ -132,6 +157,9 @@ public class AutoShooter : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Menzildeki uygun düşmanlar arasından en yakını seçer.
+    /// </summary>
     private void FindClosestEnemy()
     {
         int detectedCount =
@@ -161,16 +189,22 @@ public class AutoShooter : MonoBehaviour
             EnemyHealth enemyHealth =
                 detectedCollider.GetComponentInParent<EnemyHealth>();
 
-            if (enemyHealth == null ||
-                !enemyHealth.IsAlive ||
-                !enemyHealth.gameObject.activeInHierarchy)
+            if (enemyHealth == null)
             {
                 continue;
             }
 
-            // Player modundaysa yalnızca ön taraftaki düşmanları alır.
-            // Takım üyesi modundaysa bütün yönleri kabul eder.
-            if (!CanTargetEnemy(enemyHealth.AimPosition))
+            if (!enemyHealth.IsAlive)
+            {
+                continue;
+            }
+
+            if (!enemyHealth.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+
+            if (!CanTargetPosition(enemyHealth.AimPosition))
             {
                 continue;
             }
@@ -184,26 +218,39 @@ public class AutoShooter : MonoBehaviour
             float distanceSquared =
                 directionToEnemy.sqrMagnitude;
 
-            if (distanceSquared <
-                closestDistanceSquared)
+            if (distanceSquared >= closestDistanceSquared)
             {
-                closestDistanceSquared =
-                    distanceSquared;
-
-                closestEnemy =
-                    enemyHealth;
+                continue;
             }
+
+            closestDistanceSquared =
+                distanceSquared;
+
+            closestEnemy =
+                enemyHealth;
         }
 
         currentTarget = closestEnemy;
     }
 
 
+    /// <summary>
+    /// Mevcut hedefin hâlâ canlı, aktif,
+    /// menzilde ve hedefleme alanında olup olmadığını kontrol eder.
+    /// </summary>
     private bool IsCurrentTargetValid()
     {
-        if (currentTarget == null ||
-            !currentTarget.IsAlive ||
-            !currentTarget.gameObject.activeInHierarchy)
+        if (currentTarget == null)
+        {
+            return false;
+        }
+
+        if (!currentTarget.IsAlive)
+        {
+            return false;
+        }
+
+        if (!currentTarget.gameObject.activeInHierarchy)
         {
             return false;
         }
@@ -214,48 +261,56 @@ public class AutoShooter : MonoBehaviour
 
         directionToTarget.y = 0f;
 
-        float rangeSquared =
+        float fireRangeSquared =
             fireRange * fireRange;
 
         if (directionToTarget.sqrMagnitude >
-            rangeSquared)
+            fireRangeSquared)
         {
             return false;
         }
 
-        return CanTargetEnemy(
+        return CanTargetPosition(
             currentTarget.AimPosition
         );
     }
 
 
-    private bool CanTargetEnemy(Vector3 enemyPosition)
+    /// <summary>
+    /// FullCircle modunda bütün yönlere izin verir.
+    /// ForwardCone modunda yalnızca ön taraftaki hedeflere izin verir.
+    /// </summary>
+    private bool CanTargetPosition(Vector3 targetPosition)
     {
-        // Takım üyeleri için 360 derece hedefleme.
-        if (targetingMode == TargetingMode.FullCircle)
+        if (targetingMode ==
+            TargetingMode.FullCircle)
         {
             return true;
         }
 
-        // Player için baktığı yön kontrolü.
-        return IsInsideForwardCone(enemyPosition);
+        return IsInsideForwardCone(
+            targetPosition
+        );
     }
 
 
-    private bool IsInsideForwardCone(Vector3 enemyPosition)
+    /// <summary>
+    /// Hedefin karakterin ön görüş açısında olup olmadığını kontrol eder.
+    /// </summary>
+    private bool IsInsideForwardCone(Vector3 targetPosition)
     {
         if (facingReference == null)
         {
             return false;
         }
 
-        Vector3 directionToEnemy =
-            enemyPosition -
+        Vector3 directionToTarget =
+            targetPosition -
             facingReference.position;
 
-        directionToEnemy.y = 0f;
+        directionToTarget.y = 0f;
 
-        if (directionToEnemy.sqrMagnitude < 0.001f)
+        if (directionToTarget.sqrMagnitude < 0.001f)
         {
             return true;
         }
@@ -265,16 +320,25 @@ public class AutoShooter : MonoBehaviour
 
         forwardDirection.y = 0f;
 
-        float angleToEnemy = Vector3.Angle(
-            forwardDirection,
-            directionToEnemy
-        );
+        if (forwardDirection.sqrMagnitude < 0.001f)
+        {
+            return false;
+        }
 
-        return angleToEnemy <= maximumAimAngle;
+        float targetAngle =
+            Vector3.Angle(
+                forwardDirection,
+                directionToTarget
+            );
+
+        return targetAngle <= maximumAimAngle;
     }
 
 
-    private void RotateWeaponTowardsTarget()
+    /// <summary>
+    /// WeaponPivot veya CombatPivot objesini hedefe döndürür.
+    /// </summary>
+    private void RotatePivotTowardsTarget()
     {
         if (weaponPivot == null ||
             currentTarget == null)
@@ -308,6 +372,9 @@ public class AutoShooter : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Ateş süresi geldiyse ve FirePoint hedefe bakıyorsa mermi gönderir.
+    /// </summary>
     private void TryShoot()
     {
         if (Time.time < nextFireTime)
@@ -344,43 +411,46 @@ public class AutoShooter : MonoBehaviour
 
         directionToTarget.Normalize();
 
+        Vector3 firePointDirection =
+            firePoint.forward;
+
+        firePointDirection.y = 0f;
+
+        if (firePointDirection.sqrMagnitude < 0.001f)
+        {
+            return;
+        }
+
+        firePointDirection.Normalize();
+
         float alignmentAngle =
             Vector3.Angle(
-                firePoint.forward,
+                firePointDirection,
                 directionToTarget
             );
 
-        // WeaponPivot henüz hedefe dönmediyse ateş etme.
-        if (alignmentAngle > fireAlignmentTolerance)
+        // Pivot hedefe yeterince dönmeden ateş etme.
+        if (alignmentAngle >
+            fireAlignmentTolerance)
         {
             return;
         }
-
-        Vector3 bulletDirection =
-            firePoint.forward;
-
-        bulletDirection.y = 0f;
-
-        if (bulletDirection.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        bulletDirection.Normalize();
 
         nextFireTime =
             Time.time + fireInterval;
 
         Quaternion bulletRotation =
             Quaternion.LookRotation(
-                bulletDirection,
+                firePointDirection,
                 Vector3.up
             );
 
+        // Mermi düşmanın konumuna kilitlenmez.
+        // FirePoint hangi yöne bakıyorsa o yönde ilerler.
         BulletPool.Instance.SpawnBullet(
             firePoint.position,
             bulletRotation,
-            bulletDirection,
+            firePointDirection,
             bulletSpeed,
             bulletDamage,
             bulletLifetime
@@ -388,10 +458,17 @@ public class AutoShooter : MonoBehaviour
     }
 
 
-    private void ReturnWeaponToForward()
+    /// <summary>
+    /// Hedef kalmadığında pivotu başlangıç yönüne döndürür.
+    /// </summary>
+    private void ReturnPivotForward()
     {
-        if (!returnWeaponForwardWhenNoTarget ||
-            weaponPivot == null)
+        if (!returnForwardWhenNoTarget)
+        {
+            return;
+        }
+
+        if (weaponPivot == null)
         {
             return;
         }
@@ -399,7 +476,7 @@ public class AutoShooter : MonoBehaviour
         weaponPivot.localRotation =
             Quaternion.Slerp(
                 weaponPivot.localRotation,
-                defaultWeaponLocalRotation,
+                defaultPivotLocalRotation,
                 aimRotationSpeed * Time.deltaTime
             );
     }
@@ -414,7 +491,8 @@ public class AutoShooter : MonoBehaviour
             fireRange
         );
 
-        if (targetingMode != TargetingMode.ForwardCone)
+        if (targetingMode !=
+            TargetingMode.ForwardCone)
         {
             return;
         }
@@ -428,6 +506,13 @@ public class AutoShooter : MonoBehaviour
             directionReference.forward;
 
         forwardDirection.y = 0f;
+
+        if (forwardDirection.sqrMagnitude < 0.001f)
+        {
+            return;
+        }
+
+        forwardDirection.Normalize();
 
         Vector3 leftDirection =
             Quaternion.AngleAxis(
@@ -461,28 +546,53 @@ public class AutoShooter : MonoBehaviour
             Mathf.Max(0.1f, fireRange);
 
         maximumAimAngle =
-            Mathf.Clamp(maximumAimAngle, 0f, 180f);
+            Mathf.Clamp(
+                maximumAimAngle,
+                0f,
+                180f
+            );
 
         targetScanInterval =
-            Mathf.Max(0.02f, targetScanInterval);
+            Mathf.Max(
+                0.02f,
+                targetScanInterval
+            );
 
         maximumDetectedEnemies =
-            Mathf.Max(1, maximumDetectedEnemies);
+            Mathf.Max(
+                1,
+                maximumDetectedEnemies
+            );
 
         fireInterval =
-            Mathf.Max(0.05f, fireInterval);
+            Mathf.Max(
+                0.05f,
+                fireInterval
+            );
 
         bulletDamage =
-            Mathf.Max(1, bulletDamage);
+            Mathf.Max(
+                1,
+                bulletDamage
+            );
 
         bulletSpeed =
-            Mathf.Max(0.1f, bulletSpeed);
+            Mathf.Max(
+                0.1f,
+                bulletSpeed
+            );
 
         bulletLifetime =
-            Mathf.Max(0.1f, bulletLifetime);
+            Mathf.Max(
+                0.1f,
+                bulletLifetime
+            );
 
         aimRotationSpeed =
-            Mathf.Max(0f, aimRotationSpeed);
+            Mathf.Max(
+                0f,
+                aimRotationSpeed
+            );
 
         fireAlignmentTolerance =
             Mathf.Clamp(

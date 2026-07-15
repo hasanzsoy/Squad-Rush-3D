@@ -8,11 +8,15 @@ public class EnemyHealth : MonoBehaviour
     private int maximumHealth = 3;
 
     [Header("Target Settings")]
-    [Tooltip("Mermilerin hedef alacağı yükseklik.")]
-    [SerializeField]
+    [SerializeField, Min(0f)]
     private float aimHeight = 1f;
 
+    [Header("Debug")]
+    [SerializeField]
+    private bool showDamageLogs = true;
+
     private EnemyAI enemyAI;
+
     private int currentHealth;
     private bool isAlive;
 
@@ -28,24 +32,23 @@ public class EnemyHealth : MonoBehaviour
         enemyAI = GetComponent<EnemyAI>();
     }
 
-    private void OnEnable()
-    {
-        ResetHealth();
-    }
-
     /// <summary>
-    /// Düşmanın canını başlangıç değerine getirir.
-    /// Pool'dan tekrar çıktığında yeniden çalışır.
+    /// Düşman havuzdan çıkarıldığında canını yeniler.
     /// </summary>
     public void ResetHealth()
     {
         currentHealth = maximumHealth;
         isAlive = true;
+
+        if (showDamageLogs)
+        {
+            Debug.Log(
+                $"{name} yeniden doğdu. Can: {currentHealth}",
+                this
+            );
+        }
     }
 
-    /// <summary>
-    /// Düşmana belirtilen miktarda hasar verir.
-    /// </summary>
     public void TakeDamage(int damageAmount)
     {
         if (!isAlive)
@@ -55,12 +58,20 @@ public class EnemyHealth : MonoBehaviour
 
         damageAmount = Mathf.Max(0, damageAmount);
 
-        if (damageAmount == 0)
+        if (damageAmount <= 0)
         {
             return;
         }
 
         currentHealth -= damageAmount;
+
+        if (showDamageLogs)
+        {
+            Debug.Log(
+                $"{name} hasar aldı: {damageAmount} | Kalan can: {currentHealth}",
+                this
+            );
+        }
 
         if (currentHealth <= 0)
         {
@@ -77,6 +88,14 @@ public class EnemyHealth : MonoBehaviour
 
         isAlive = false;
         currentHealth = 0;
+
+        if (showDamageLogs)
+        {
+            Debug.Log(
+                $"{name} öldü ve havuza gönderildi.",
+                this
+            );
+        }
 
         if (enemyAI != null)
         {
