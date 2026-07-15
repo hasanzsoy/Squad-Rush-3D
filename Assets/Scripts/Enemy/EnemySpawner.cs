@@ -5,67 +5,65 @@ using UnityEngine.AI;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Player")]
-    [Tooltip("Düşmanların çevresinde oluşacağı oyuncu.")]
     [SerializeField]
     private Transform player;
 
     [Header("Wave Settings")]
-    [Tooltip("Bu odada toplam kaç düşman oluşturulacak?")]
     [SerializeField, Min(1)]
     private int totalEnemiesToSpawn = 20;
 
-    [Tooltip("Aynı anda sahnede bulunabilecek maksimum düşman sayısı.")]
     [SerializeField, Min(1)]
     private int maximumActiveEnemies = 6;
 
     [Header("Spawn Timing")]
-    [Tooltip("Oda başladıktan kaç saniye sonra ilk düşman oluşacak?")]
     [SerializeField, Min(0f)]
     private float startingDelay = 1f;
 
-    [Tooltip("İki düşmanın oluşturulması arasındaki süre.")]
     [SerializeField, Min(0.05f)]
     private float spawnInterval = 1.2f;
 
+    [Tooltip("Bir düşman öldükten sonra yenisinin gelme süresi.")]
+    [SerializeField, Min(0f)]
+    private float replacementSpawnDelay = 0.75f;
+
     [Header("Spawn Area")]
-    [Tooltip("Düşmanın oyuncuya en yakın oluşabileceği mesafe.")]
+    [Tooltip("Düşmanın Player'a en yakın doğma uzaklığı.")]
     [SerializeField, Min(1f)]
-    private float minimumSpawnDistance = 7f;
+    private float minimumSpawnDistance = 9f;
 
-    [Tooltip("Düşmanın oyuncuya en uzak oluşabileceği mesafe.")]
+    [Tooltip("Düşmanın Player'a en uzak doğma uzaklığı.")]
     [SerializeField, Min(1f)]
-    private float maximumSpawnDistance = 10f;
+    private float maximumSpawnDistance = 12f;
 
-    [Tooltip("Rastgele noktanın yakınında NavMesh arama mesafesi.")]
+    [Tooltip("Yeni doğma noktası önceki noktadan en az bu kadar uzak olsun.")]
+    [SerializeField, Min(0f)]
+    private float minimumDistanceFromLastSpawn = 4f;
+
+    [Tooltip("Yeni düşman, mevcut düşmanların üzerine doğmasın.")]
+    [SerializeField, Min(0f)]
+    private float minimumDistanceFromOtherEnemies = 1.5f;
+
+    [SerializeField]
+    private LayerMask enemyLayer;
+
     [SerializeField, Min(0.1f)]
     private float navMeshSearchDistance = 2f;
 
-    [Tooltip("Geçerli bir doğma noktası bulmak için yapılacak deneme sayısı.")]
     [SerializeField, Min(1)]
-    private int spawnPositionAttempts = 15;
+    private int spawnPositionAttempts = 25;
 
     private EnemyPool enemyPool;
 
     private float nextSpawnTime;
+
     private int spawnedEnemyCount;
+    private int previousActiveEnemyCount;
 
     private bool isWaveActive;
     private bool waveCompleted;
 
-    public int SpawnedEnemyCount => spawnedEnemyCount;
-
-    public int ActiveEnemyCount =>
-        enemyPool != null
-            ? enemyPool.ActiveEnemyCount
-            : 0;
-
-    public int RemainingEnemiesToSpawn =>
-        Mathf.Max(
-            0,
-            totalEnemiesToSpawn - spawnedEnemyCount
-        );
-
-    public bool IsWaveCompleted => waveCompleted;
+    private bool hasLastSpawnPosition;
+    private Vector3 lastSpawnPosition;
 
     private void Awake()
     {
@@ -91,6 +89,7 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
+        DetectEnemyDeath();
         CheckWaveCompletion();
 
         if (waveCompleted)
@@ -101,91 +100,65 @@ public class EnemySpawner : MonoBehaviour
         TrySpawnNextEnemy();
     }
 
-    /// <summary>
-    /// Yeni düşman dalgasını başlatır.
-    /// </summary>
     public void StartWave()
     {
         spawnedEnemyCount = 0;
+        previousActiveEnemyCount = 0;
 
         isWaveActive = true;
         waveCompleted = false;
 
+        hasLastSpawnPosition = false;
+
         nextSpawnTime =
             Time.time + startingDelay;
-
-        Debug.Log(
-            $"Dalga başladı. Toplam düşman: {totalEnemiesToSpawn}",
-            this
-        );
     }
 
-    /// <summary>
-    /// Belirlenen düşman sayısıyla yeni dalga başlatır.
-    /// Daha sonra RoomManager tarafından kullanılabilir.
-    /// </summary>
-    public void StartWave(int enemyAmount)
+    private void DetectEnemyDeath()
     {
-        totalEnemiesToSpawn =
-            Mathf.Max(1, enemyAmount);
+        int currentActiveEnemyCount =
+            enemyPool.ActiveEnemyCount;
 
-        StartWave();
+        // Aktif sayı azaldıysa bir düşman havuza dönmüştür.
+        if (currentActiveEnemyCount <
+            previousActiveEnemyCount)
+        {
+            nextSpawnTime = Mathf.Max(
+                nextSpawnTime,
+                Time.time + replacementSpawnDelay
+            );
+        }
+
+        previousActiveEnemyCount =
+            currentActiveEnemyCount;
     }
 
     private void TrySpawnNextEnemy()
     {
-        // Bu oda için bütün düşmanlar oluşturulduysa yenisini üretme.
-        if (spawnedEnemyCount >= totalEnemiesToSpawn)
+        if (spawnedEnemyCount >=
+            totalEnemiesToSpawn)
         {
             return;
         }
 
-        // Henüz doğma zamanı gelmediyse bekle.
         if (Time.time < nextSpawnTime)
         {
             return;
         }
 
-        // Sahnedeki aktif düşman limiti doluysa bekle.
         if (enemyPool.ActiveEnemyCount >=
             maximumActiveEnemies)
         {
             return;
         }
 
-        bool spawnSuccessful =
-            TrySpawnEnemy();
-
-        if (!spawnSuccessful)
+        if (!TryGetSpawnPosition(
+                out Vector3 spawnPosition))
         {
-            // Geçerli nokta bulunamadığında kısa süre sonra tekrar dene.
             nextSpawnTime =
                 Time.time + 0.25f;
 
             return;
-        }
-
-        spawnedEnemyCount++;
-
-        nextSpawnTime =
-            Time.time + spawnInterval;
-    }
-
-    private bool TrySpawnEnemy()
-    {
-        bool positionFound =
-            TryGetSpawnPosition(
-                out Vector3 spawnPosition
-            );
-
-        if (!positionFound)
-        {
-            Debug.LogWarning(
-                "EnemySpawner: Geçerli NavMesh doğma noktası bulunamadı.",
-                this
-            );
-
-            return false;
         }
 
         EnemyAI spawnedEnemy =
@@ -194,49 +167,23 @@ public class EnemySpawner : MonoBehaviour
                 player
             );
 
-        return spawnedEnemy != null;
-    }
-
-    private void CheckWaveCompletion()
-    {
-        // Önce bu oda için bütün düşmanların oluşturulması gerekir.
-        bool allEnemiesSpawned =
-            spawnedEnemyCount >= totalEnemiesToSpawn;
-
-        if (!allEnemiesSpawned)
+        if (spawnedEnemy == null)
         {
             return;
         }
 
-        // Oluşturulmuş düşmanlardan hâlâ hayatta olan varsa oda bitmez.
-        bool hasActiveEnemies =
-            enemyPool.ActiveEnemyCount > 0;
+        spawnedEnemyCount++;
 
-        if (hasActiveEnemies)
-        {
-            return;
-        }
+        lastSpawnPosition =
+            spawnPosition;
 
-        CompleteWave();
-    }
+        hasLastSpawnPosition = true;
 
-    private void CompleteWave()
-    {
-        if (waveCompleted)
-        {
-            return;
-        }
+        previousActiveEnemyCount =
+            enemyPool.ActiveEnemyCount;
 
-        waveCompleted = true;
-        isWaveActive = false;
-
-        Debug.Log(
-            "Odadaki bütün düşmanlar öldürüldü. Oda tamamlandı!",
-            this
-        );
-
-        // Daha sonra burada RoomManager çağrılacak:
-        // RoomManager.Instance.CompleteRoom();
+        nextSpawnTime =
+            Time.time + spawnInterval;
     }
 
     private bool TryGetSpawnPosition(
@@ -246,18 +193,8 @@ public class EnemySpawner : MonoBehaviour
              i < spawnPositionAttempts;
              i++)
         {
-            float randomAngle =
-                Random.Range(0f, 360f);
-
-            float angleInRadians =
-                randomAngle * Mathf.Deg2Rad;
-
-            Vector3 randomDirection =
-                new Vector3(
-                    Mathf.Cos(angleInRadians),
-                    0f,
-                    Mathf.Sin(angleInRadians)
-                );
+            Vector2 randomCircle =
+                Random.insideUnitCircle.normalized;
 
             float randomDistance =
                 Random.Range(
@@ -267,27 +204,109 @@ public class EnemySpawner : MonoBehaviour
 
             Vector3 candidatePosition =
                 player.position +
-                randomDirection * randomDistance;
+                new Vector3(
+                    randomCircle.x,
+                    0f,
+                    randomCircle.y
+                ) * randomDistance;
 
-            bool navMeshPointFound =
+            bool pointFound =
                 NavMesh.SamplePosition(
                     candidatePosition,
-                    out NavMeshHit hit,
+                    out NavMeshHit navMeshHit,
                     navMeshSearchDistance,
                     NavMesh.AllAreas
                 );
 
-            if (!navMeshPointFound)
+            if (!pointFound)
             {
                 continue;
             }
 
-            spawnPosition = hit.position;
+            Vector3 validPosition =
+                navMeshHit.position;
+
+            Vector3 directionFromPlayer =
+                validPosition - player.position;
+
+            directionFromPlayer.y = 0f;
+
+            // NavMesh araması noktayı Player'a fazla yaklaştırmışse reddet.
+            if (directionFromPlayer.sqrMagnitude <
+                minimumSpawnDistance *
+                minimumSpawnDistance)
+            {
+                continue;
+            }
+
+            if (hasLastSpawnPosition)
+            {
+                Vector3 directionFromLastSpawn =
+                    validPosition -
+                    lastSpawnPosition;
+
+                directionFromLastSpawn.y = 0f;
+
+                float minimumLastDistanceSquared =
+                    minimumDistanceFromLastSpawn *
+                    minimumDistanceFromLastSpawn;
+
+                if (directionFromLastSpawn.sqrMagnitude <
+                    minimumLastDistanceSquared)
+                {
+                    continue;
+                }
+            }
+
+            bool enemyAlreadyNearby =
+                Physics.CheckSphere(
+                    validPosition,
+                    minimumDistanceFromOtherEnemies,
+                    enemyLayer,
+                    QueryTriggerInteraction.Ignore
+                );
+
+            if (enemyAlreadyNearby)
+            {
+                continue;
+            }
+
+            spawnPosition = validPosition;
             return true;
         }
 
         spawnPosition = Vector3.zero;
+
+        Debug.LogWarning(
+            "EnemySpawner: Uygun uzak doğma noktası bulunamadı.",
+            this
+        );
+
         return false;
+    }
+
+    private void CheckWaveCompletion()
+    {
+        bool allEnemiesSpawned =
+            spawnedEnemyCount >= totalEnemiesToSpawn;
+
+        if (!allEnemiesSpawned)
+        {
+            return;
+        }
+
+        if (enemyPool.ActiveEnemyCount > 0)
+        {
+            return;
+        }
+
+        waveCompleted = true;
+        isWaveActive = false;
+
+        Debug.Log(
+            "Bütün düşmanlar öldü. Oda tamamlandı!",
+            this
+        );
     }
 
     private void FindPlayerIfNecessary()
@@ -298,11 +317,14 @@ public class EnemySpawner : MonoBehaviour
         }
 
         GameObject playerObject =
-            GameObject.FindGameObjectWithTag("Player");
+            GameObject.FindGameObjectWithTag(
+                "Player"
+            );
 
         if (playerObject != null)
         {
-            player = playerObject.transform;
+            player =
+                playerObject.transform;
         }
     }
 
@@ -311,12 +333,11 @@ public class EnemySpawner : MonoBehaviour
         totalEnemiesToSpawn =
             Mathf.Max(1, totalEnemiesToSpawn);
 
-        maximumActiveEnemies =
-            Mathf.Clamp(
-                maximumActiveEnemies,
-                1,
-                totalEnemiesToSpawn
-            );
+        maximumActiveEnemies = Mathf.Clamp(
+            maximumActiveEnemies,
+            1,
+            totalEnemiesToSpawn
+        );
 
         startingDelay =
             Mathf.Max(0f, startingDelay);
@@ -324,13 +345,27 @@ public class EnemySpawner : MonoBehaviour
         spawnInterval =
             Mathf.Max(0.05f, spawnInterval);
 
+        replacementSpawnDelay =
+            Mathf.Max(0f, replacementSpawnDelay);
+
         minimumSpawnDistance =
             Mathf.Max(1f, minimumSpawnDistance);
 
-        maximumSpawnDistance =
+        maximumSpawnDistance = Mathf.Max(
+            minimumSpawnDistance,
+            maximumSpawnDistance
+        );
+
+        minimumDistanceFromLastSpawn =
             Mathf.Max(
-                minimumSpawnDistance,
-                maximumSpawnDistance
+                0f,
+                minimumDistanceFromLastSpawn
+            );
+
+        minimumDistanceFromOtherEnemies =
+            Mathf.Max(
+                0f,
+                minimumDistanceFromOtherEnemies
             );
 
         navMeshSearchDistance =

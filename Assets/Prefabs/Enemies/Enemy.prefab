@@ -157,12 +157,12 @@ NavMeshAgent:
   m_GameObject: {fileID: 6816940187724902983}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.45
+  m_Radius: 0.5
   m_Speed: 3.5
   m_Acceleration: 12
   avoidancePriority: 50
   m_AngularSpeed: 720
-  m_StoppingDistance: 1.4
+  m_StoppingDistance: 3.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -183,6 +183,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   target: {fileID: 0}
+  minimumStoppingDistance: 3.5
+  maximumStoppingDistance: 4.5
+  resumeDistanceBuffer: 0.5
   pathRefreshInterval: 0.15
   targetPositionThreshold: 0.1
   maximumDistanceFromTarget: 30
@@ -198,5 +201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 712c29b7fb00b6b40b8edff1ddf170b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maximumHealth: 3
+  maximumHealth: 1
   aimHeight: 1
+  showDamageLogs: 1
