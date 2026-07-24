@@ -1,0 +1,243 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\portfolyo\\Squad-Rush-3D\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\enemy\\enemyai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemy\\enemyai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\enemy\\enemyhealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemy\\enemyhealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\enemy\\enemyspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemy\\enemyspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\combat\\bulletprojectile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\bulletprojectile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Combat\\AutoShooter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Combat\\AutoShooter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\combat\\bulletpool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\bulletpool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\enemy\\enemypool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemy\\enemypool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\squad\\squadmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\squad\\squadmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\player\\playermovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playermovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\squad\\squadmemberfollower.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\squad\\squadmemberfollower.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|d:\\portfolyo\\squad-rush-3d\\assets\\scripts\\camera\\topdowncamerafollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\camera\\topdowncamerafollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 17,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:11:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1784407770:0:{83107a3e-496a-485e-b455-16ddb978e55e}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "BulletPool.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Combat\\BulletPool.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\BulletPool.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Combat\\BulletPool.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\BulletPool.cs",
+              "ViewState": "AgIAALcAAAAAAAAAAAAiwOQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T18:12:52.257Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "BulletProjectile.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Combat\\BulletProjectile.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\BulletProjectile.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Combat\\BulletProjectile.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\BulletProjectile.cs",
+              "ViewState": "AgIAAMIAAAAAAAAAAAAiwNUAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T18:11:34.333Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EnemyHealth.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Enemy\\EnemyHealth.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemy\\EnemyHealth.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Enemy\\EnemyHealth.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemy\\EnemyHealth.cs",
+              "ViewState": "AgIAAGsAAAAAAAAAAAAiwJgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T18:08:10.596Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EnemySpawner.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Enemy\\EnemySpawner.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemy\\EnemySpawner.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Enemy\\EnemySpawner.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemy\\EnemySpawner.cs",
+              "ViewState": "AgIAAFQBAAAAAAAAAAAiwH4BAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:25:27.576Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "EnemyPool.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Enemy\\EnemyPool.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemy\\EnemyPool.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Enemy\\EnemyPool.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemy\\EnemyPool.cs",
+              "ViewState": "AgIAALgAAAAAAAAAAAAiwOUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:24:36.912Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "SquadManager.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Squad\\SquadManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Squad\\SquadManager.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Squad\\SquadManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Squad\\SquadManager.cs",
+              "ViewState": "AgIAAAIBAAAAAAAAAAAUwDQBAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-12T12:48:19.263Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SquadMemberFollower.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Squad\\SquadMemberFollower.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Squad\\SquadMemberFollower.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Squad\\SquadMemberFollower.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Squad\\SquadMemberFollower.cs",
+              "ViewState": "AgIAAFIAAAAAAAAAAAAiwH8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-12T12:46:09.402Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "TopDownCameraFollow.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Camera\\TopDownCameraFollow.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Camera\\TopDownCameraFollow.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Camera\\TopDownCameraFollow.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Camera\\TopDownCameraFollow.cs",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAiwHoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-12T11:46:07.886Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "PlayerMovement.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Player\\PlayerMovement.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerMovement.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Player\\PlayerMovement.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerMovement.cs",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAiwHkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-09T18:04:27.786Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EnemyAI.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Enemy\\EnemyAI.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemy\\EnemyAI.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Enemy\\EnemyAI.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemy\\EnemyAI.cs",
+              "ViewState": "AgIAAO0BAAAAAAAAAAAiwBoCAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-12T18:30:01.006Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AutoShooter.cs",
+              "DocumentMoniker": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Combat\\AutoShooter.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\AutoShooter.cs",
+              "ToolTip": "D:\\portfolyo\\Squad-Rush-3D\\Assets\\Scripts\\Combat\\AutoShooter.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\AutoShooter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFsCAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-15T17:40:31.705Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1490,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
